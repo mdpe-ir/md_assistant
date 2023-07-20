@@ -6,11 +6,30 @@ import 'package:md_assistant/models/task.dart';
 import 'package:md_assistant/screens/home_screen.dart';
 import 'package:md_assistant/screens/settings_screen.dart';
 import 'package:md_assistant/utils/hive_helper.dart';
-
+import 'package:universal_platform/universal_platform.dart';
+import 'package:window_manager/window_manager.dart';
 import 'application.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (UniversalPlatform.isDesktop) {
+    // Must add this line.
+    await windowManager.ensureInitialized();
+
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(400, 620),
+      maximumSize: Size(500, 720) ,
+      center: true,
+      backgroundColor: Colors.transparent,
+      titleBarStyle: TitleBarStyle.normal,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
+
   await HiveHelper.initHive();
   await Hive.openBox<Task>('tasks');
   runApp(MyApp());
@@ -33,13 +52,13 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [
-        Locale('fa', 'IR'), // Persian (Farsi) locale
+        const Locale('fa', 'IR'), // Persian (Farsi) locale
       ],
 
-      locale: Locale('fa', 'IR'),
+      locale: const Locale('fa', 'IR'),
       // Set the initial locale to Persian (Farsi)
       routes: {
-        '/': (_) => Application(),
+        '/': (_) => const Application(),
       },
     );
   }

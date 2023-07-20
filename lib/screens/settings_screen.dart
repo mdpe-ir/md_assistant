@@ -99,19 +99,33 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
         itemBuilder: (context, index) {
           final task = dayTasks[index];
           return ListTile(
-            title: TextFormField(
-              initialValue: task.name,
-              onChanged: (value) {
-                task.name = value;
-              },
-              decoration: InputDecoration(labelText: 'نام تسک'),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                initialValue: task.name,
+                onChanged: (value) {
+                  task.name = value;
+                },
+                decoration: InputDecoration(
+                  labelText: 'نام تسک',
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ),
-            subtitle: TextFormField(
-              initialValue: task.notes,
-              onChanged: (value) {
-                task.notes = value;
-              },
-              decoration: InputDecoration(labelText: 'نوت'),
+            subtitle: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                maxLines: null,
+                minLines: 1,
+                initialValue: task.notes,
+                onChanged: (value) {
+                  task.notes = value;
+                },
+                decoration: InputDecoration(
+                  labelText: 'نوت',
+                  border: OutlineInputBorder(),
+                ),
+              ),
             ),
             trailing: IconButton(
               icon: Icon(Icons.delete),
@@ -135,4 +149,3 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
     );
   }
 }
-
