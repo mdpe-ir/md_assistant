@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:md_assistant/models/task.dart';
@@ -20,7 +22,7 @@ class DailyTasksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("تنظیم کار های روزانه"),
+        title: const Text("تنظیم کار های روزانه"),
       ),
       body: ListView.builder(
         itemCount: daysOfWeek.length,
@@ -67,9 +69,12 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
   }
 
   void _loadTasks() async {
+    log('Loading tasks...');
     final tasksBox = await Hive.openBox<Task>('tasks');
-    dayTasks = tasksBox.values.where((task) => task.day == widget.day).toList();
-    setState(() {});
+    setState(() {
+      dayTasks =
+          tasksBox.values.where((task) => task.day == widget.day).toList();
+    });
   }
 
   Future<void> _addTask() async {
@@ -78,9 +83,9 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
     });
   }
 
-  Future<void> _deleteTask(int index) async {
+  Future<void> _deleteTask(int index, Task task) async {
     final tasksBox = await Hive.openBox<Task>('tasks');
-    await tasksBox.delete(dayTasks[index]);
+    await tasksBox.delete(task.key);
     setState(() {
       dayTasks.removeAt(index);
     });
@@ -94,11 +99,12 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
         actions: [
           IconButton(
             onPressed: _addTask,
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
           ),
         ],
       ),
       body: ListView.builder(
+        key: UniqueKey(),
         itemCount: dayTasks.length,
         itemBuilder: (context, index) {
           final task = dayTasks[index];
@@ -110,7 +116,7 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
                 onChanged: (value) {
                   task.name = value;
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'نام تسک',
                   border: OutlineInputBorder(),
                 ),
@@ -125,15 +131,15 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
                 onChanged: (value) {
                   task.notes = value;
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'نوت',
                   border: OutlineInputBorder(),
                 ),
               ),
             ),
             trailing: IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () => _deleteTask(index),
+              icon: const Icon(Icons.delete),
+              onPressed: () => _deleteTask(index, task),
             ),
           );
         },
@@ -143,11 +149,15 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
           final tasksBox = await Hive.openBox<Task>('tasks');
           for (final task in dayTasks) {
             task.day = widget.day;
-            tasksBox.add(task);
+            if (task.key == null) {
+              tasksBox.add(task);
+            } else {
+              tasksBox.put(task.key, task);
+            }
           }
           Navigator.pop(context);
         },
-        child: Icon(Icons.save),
+        child: const Icon(Icons.save),
       ),
     );
   }
