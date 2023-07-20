@@ -121,6 +121,7 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
                 onChanged: (value) {
                   task.notes = value;
                 },
+
                 decoration: InputDecoration(
                   labelText: 'نوت',
                   border: OutlineInputBorder(),
