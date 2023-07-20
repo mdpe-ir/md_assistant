@@ -23,6 +23,7 @@ dependencies:
   flutter_localization: ^0.1.12
   window_manager: ^0.3.5
   universal_platform: ^1.0.0+1
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:md_assistant/screens/daily_tasks_screen.dart';
 import 'package:md_assistant/screens/settings_screen.dart';
 
 import 'screens/home_screen.dart';
@@ -14,6 +15,7 @@ class _ApplicationState extends State<Application> {
   int currentIndex = 0;
   List<Widget> pages = [
     HomeScreen(),
+    DailyTasksScreen(),
     SettingsScreen(),
   ];
 
@@ -26,6 +28,10 @@ class _ApplicationState extends State<Application> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'خانه',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today_rounded),
+            label: 'کار های روزانه',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
