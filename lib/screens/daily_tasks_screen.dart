@@ -72,13 +72,15 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
     setState(() {});
   }
 
-  void _addTask() {
+  Future<void> _addTask() async {
     setState(() {
       dayTasks.add(Task(name: '', notes: '', day: widget.day));
     });
   }
 
-  void _deleteTask(int index) {
+  Future<void> _deleteTask(int index) async {
+    final tasksBox = await Hive.openBox<Task>('tasks');
+    await tasksBox.delete(dayTasks[index]);
     setState(() {
       dayTasks.removeAt(index);
     });
@@ -139,10 +141,9 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final tasksBox = await Hive.openBox<Task>('tasks');
-          await tasksBox.clear(); // Clear previous tasks for this day
           for (final task in dayTasks) {
             task.day = widget.day;
-            await tasksBox.add(task);
+            tasksBox.add(task);
           }
           Navigator.pop(context);
         },
