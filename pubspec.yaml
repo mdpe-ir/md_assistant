@@ -3,7 +3,8 @@ description: Personal assistant
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.0.10+12
+
+version: 0.0.11+13
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
