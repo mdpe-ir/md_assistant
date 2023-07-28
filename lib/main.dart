@@ -1,13 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:md_assistant/models/task.dart';
+import 'package:md_assistant/providers/secure_storage_provider.dart';
 import 'package:md_assistant/utils/hive_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:window_manager/window_manager.dart';
 import 'application.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,8 +30,14 @@ void main() async {
     });
   }
 
+  await SecureStorageProvider.initSecureStorageProvider();
   await HiveHelper.initHive();
   await Hive.openBox<Task>('tasks');
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(MyApp());
 }
 
@@ -36,8 +45,7 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 
-  static _MyAppState? of(BuildContext context) =>
-      context.findAncestorStateOfType<_MyAppState>();
+  static _MyAppState? of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -79,8 +87,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         fontFamily: "Vazirmatn",
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue, brightness: Brightness.light),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light),
       ),
       // applies this theme if the device theme is dark mode
       darkTheme: ThemeData(
@@ -88,8 +95,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         fontFamily: "Vazirmatn",
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue, brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark),
       ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,

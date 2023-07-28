@@ -39,6 +39,8 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
+/android/app/google-services.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/signkey/upload-keystore.jks

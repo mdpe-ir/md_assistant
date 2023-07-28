@@ -3,7 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  firebase_core
   flutter_localization
+  flutter_secure_storage_windows
   screen_retriever
   window_manager
 )
