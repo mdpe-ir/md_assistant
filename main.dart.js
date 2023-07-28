@@ -26308,7 +26308,7 @@ aqP:function aqP(a){this.a=a},
 aqN:function aqN(a,b){this.a=a
 this.b=b},
 aqO:function aqO(){},
-Gy(a,b){var s=0,r=A.M(t.H),q,p,o,n,m
+Gy(a,b){var s=0,r=A.M(t.H),q,p,o,n,m,l,k,j
 var $async$Gy=A.N(function(c,d){if(c===1)return A.J(d,r)
 while(true)switch(s){case 0:A.aGq("authKey is "+A.h(B.am.d8(0,a)))
 q=t.N
@@ -26319,16 +26319,21 @@ o=new A.a6e(q)
 s=2
 return A.E(new A.ot(q).aj2(0,"modifiedTime desc","name contains  'md_assistant_tasks.json'"),$async$Gy)
 case 2:n=d.a
-n=n==null?null:B.b.gO(n).CW
-if(n==null)n=""
-s=3
-return A.E(new A.ot(q).b3(0,n),$async$Gy)
-case 3:m=d
-if(J.Z(m)===B.a6c){q=t.hS.a(m).CW
+m=n==null
+if(!m&&n.length!==0){l=m?null:B.b.gO(n)
+k=l!=null?l.CW:null}else k=null
+s=k!=null?3:5
+break
+case 3:s=6
+return A.E(new A.ot(q).b3(0,k),$async$Gy)
+case 6:j=d
+if(J.Z(j)===B.a6c){q=t.hS.a(j).CW
 if(b)A.qv(o,q)
 else{q.toString
-A.qu(o,q)}}else if(b)A.qv(o,null)
-return A.K(null,r)}})
+A.qu(o,q)}}s=4
+break
+case 5:if(b)A.qv(o,null)
+case 4:return A.K(null,r)}})
 return A.L($async$Gy,r)},
 qv(a,b){var s=0,r=A.M(t.z),q,p,o,n
 var $async$qv=A.N(function(c,d){if(c===1)return A.J(d,r)
