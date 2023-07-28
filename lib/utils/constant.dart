@@ -7,4 +7,5 @@ class Constant {
   static const String saturday = "شنبه";
   static const String sunday = "یکشنبه";
   static const String googleAuthKey = "secure_storage_auth_key";
+  static const String googleDriveTaskSyncFileName = "md_assistant_tasks.json";
 }

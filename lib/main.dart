@@ -11,6 +11,7 @@ import 'package:universal_platform/universal_platform.dart';
 import 'package:window_manager/window_manager.dart';
 import 'application.dart';
 import 'firebase_options.dart';
+import 'providers/shared_preferences_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,7 @@ void main() async {
   }
 
   await SecureStorageProvider.initSecureStorageProvider();
+  await SharedPreferencesProvider.initSharedPreferencesProvider();
   await HiveHelper.initHive();
   await Hive.openBox<Task>('tasks');
 

@@ -13,6 +13,10 @@ class SecureStorageProvider {
     return await _flutterSecureStorage.read(key: key);
   }
 
+  static Future<void> deleteString({required String key}) async {
+    return await _flutterSecureStorage.delete(key: key);
+  }
+
   static Future<void> initSecureStorageProvider() async {
     AndroidOptions _getAndroidOptions() => const AndroidOptions(
           encryptedSharedPreferences: true,

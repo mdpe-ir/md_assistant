@@ -1,12 +1,14 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:google_sign_in/google_sign_in.dart' as signIn;
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:md_assistant/components/sync_button_components.dart';
 import 'package:md_assistant/models/task.dart';
 import 'package:md_assistant/providers/secure_storage_provider.dart';
+import 'package:md_assistant/service/app_sync.dart';
 import 'package:md_assistant/utils/constant.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -16,20 +18,8 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('کار های امروز'),
         actions: [
-          IconButton(
-            tooltip: "سینک داده ها",
-            icon: const Icon(Icons.sync_rounded),
-            onPressed: () async {
-              String? authKey = await SecureStorageProvider.getString(key: Constant.googleAuthKey);
-              if (authKey == null) {
-                final googleSignIn = signIn.GoogleSignIn.standard(scopes: [drive.DriveApi.driveScope]);
-                final signIn.GoogleSignInAccount? account = await googleSignIn.signIn();
-                final authHeaders = await account?.authHeaders;
-                authKey = authHeaders.toString();
-                await SecureStorageProvider.setString(key: Constant.googleAuthKey, value: authKey);
-              }
-            },
-          ),
+          SyncButtonComponents(isSendData: false),
+          SyncButtonComponents(isSendData: true),
           IconButton(
             tooltip: "",
             icon: const Icon(Icons.unpublished_outlined),
