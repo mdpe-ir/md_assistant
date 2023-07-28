@@ -3,6 +3,7 @@ description: Personal assistant
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
+
 version: 0.0.14+16
 
 environment:
@@ -45,4 +46,3 @@ flutter:
         - asset: assets/fonts/Vazirmatn-Regular.ttf
         - asset: assets/fonts/Vazirmatn-Medium.ttf
           weight: 600
-
