@@ -45,4 +45,3 @@ app.*.map.json
 /android/app/release
 /signkey/upload-keystore.jks
 
-
