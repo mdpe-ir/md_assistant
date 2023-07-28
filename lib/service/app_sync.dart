@@ -18,18 +18,28 @@ class AppSync {
       q: "name contains  '${Constant.googleDriveTaskSyncFileName}'",
       orderBy: "modifiedTime desc",
     );
-    final file = await driveApi.files.get(filesList.files?.first.id ?? "");
-    if (file.runtimeType == drive.File) {
-      drive.File backupFile = file as drive.File;
-      if (isSendData) {
-        saveSyncData(driveApi, id: backupFile.id);
-      } else {
-        getSyncData(driveApi, backupFile.id!);
+
+    String? id;
+
+    if (filesList.files != null && filesList.files!.isNotEmpty) {
+      var first = filesList.files?.first;
+      if (first != null) {
+        id = first.id;
+      }
+    }
+
+    if (id != null) {
+      final file = await driveApi.files.get(id!);
+      if (file.runtimeType == drive.File) {
+        drive.File backupFile = file as drive.File;
+        if (isSendData) {
+          saveSyncData(driveApi, id: backupFile.id);
+        } else {
+          getSyncData(driveApi, backupFile.id!);
+        }
       }
     } else {
-      if (isSendData) {
-        saveSyncData(driveApi);
-      }
+      if (isSendData) saveSyncData(driveApi);
     }
   }
 
