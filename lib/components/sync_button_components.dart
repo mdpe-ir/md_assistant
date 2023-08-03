@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
@@ -34,12 +35,16 @@ class _SyncButtonComponentsState extends State<SyncButtonComponents> {
           setState(() => isLoading = true);
           String? authKey = await SecureStorageProvider.getString(key: Constant.googleAuthKey);
           if (authKey == null) {
+            log("Start LOGIN");
             final googleSignIn = signIn.GoogleSignIn.standard(scopes: [drive.DriveApi.driveScope]);
             final signIn.GoogleSignInAccount? account = await googleSignIn.signIn();
+            log("Start LOGIN");
             final authHeaders = await account?.authHeaders;
+            log("authHeaders is ${authHeaders}");
             authKey = json.encode(authHeaders);
             await SecureStorageProvider.setString(key: Constant.googleAuthKey, value: authKey);
           }
+
           await AppSync.syncApplicationData(authKey, widget.isSendData);
           setState(() => isLoading = false);
           ScaffoldMessenger.of(context).clearSnackBars();
@@ -53,6 +58,7 @@ class _SyncButtonComponentsState extends State<SyncButtonComponents> {
             ));
           }
         } catch (e) {
+          log("ERROR IS ${e.toString()}");
           await SecureStorageProvider.deleteString(key: Constant.googleAuthKey);
           setState(() => isLoading = false);
           ScaffoldMessenger.of(context).clearSnackBars();

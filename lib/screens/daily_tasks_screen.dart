@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:md_assistant/models/task.dart';
@@ -72,14 +72,13 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
     log('Loading tasks...');
     final tasksBox = await Hive.openBox<Task>('tasks');
     setState(() {
-      dayTasks =
-          tasksBox.values.where((task) => task.day == widget.day).toList();
+      dayTasks = tasksBox.values.where((task) => task.day == widget.day).toList();
     });
   }
 
   Future<void> _addTask() async {
     setState(() {
-      dayTasks.add(Task(name: '', notes: '', day: widget.day));
+      dayTasks.insert(0, Task(name: '', notes: '', day: widget.day));
     });
   }
 
@@ -108,6 +107,7 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
         itemCount: dayTasks.length,
         itemBuilder: (context, index) {
           final task = dayTasks[index];
+          TextEditingController noteController = TextEditingController(text: task.notes);
           return ListTile(
             title: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -127,13 +127,26 @@ class _DayTasksScreenState extends State<DayTasksScreen> {
               child: TextFormField(
                 maxLines: null,
                 minLines: 1,
-                initialValue: task.notes,
+                controller: noteController,
                 onChanged: (value) {
                   task.notes = value;
                 },
-                decoration: const InputDecoration(
-                  labelText: 'نوت',
+                decoration:  InputDecoration(
+                  labelText: 'یادداشت / ساعت انجام کار',
                   border: OutlineInputBorder(),
+                  suffix: IconButton(
+                      onPressed: () async {
+                        var picked = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (mounted) {
+                          String? label = picked?.persianFormat(context);
+                          setState(() => task.notes = label ?? "");
+                          noteController.text = task.notes;
+                        }
+                      },
+                      icon: Icon(Icons.calendar_month)),
                 ),
               ),
             ),

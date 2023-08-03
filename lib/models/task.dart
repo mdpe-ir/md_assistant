@@ -16,15 +16,13 @@ class Task extends HiveObject {
   @HiveField(3)
   String day;
 
-  Task({required this.name, required this.notes, this.isCompleted = false, required this.day});
+  @HiveField(4)
+  int? doneDateTimeTimeStamp;
+
+  Task({required this.name, required this.notes, this.isCompleted = false, required this.day, this.doneDateTimeTimeStamp = 0});
 
   Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'notes': notes,
-      'isCompleted': isCompleted,
-      'day': day,
-    };
+    return {'name': name, 'notes': notes, 'isCompleted': isCompleted, 'day': day, 'doneDateTimeTimeStamp': doneDateTimeTimeStamp};
   }
 
   // Convert the Map to Task object
@@ -34,6 +32,7 @@ class Task extends HiveObject {
       notes: map['notes'],
       isCompleted: map['isCompleted'] ?? false,
       day: map['day'],
+      doneDateTimeTimeStamp: map['doneDateTimeTimeStamp'] ?? 0,
     );
   }
 }

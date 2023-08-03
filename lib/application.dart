@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:md_assistant/screens/ai_chat_screen.dart';
 import 'package:md_assistant/screens/daily_tasks_screen.dart';
 import 'package:md_assistant/screens/settings_screen.dart';
 
@@ -16,6 +17,7 @@ class _ApplicationState extends State<Application> {
   List<Widget> pages = [
     HomeScreen(),
     DailyTasksScreen(),
+    AiChatScreen(),
     SettingsScreen(),
   ];
 
@@ -24,6 +26,7 @@ class _ApplicationState extends State<Application> {
     return Scaffold(
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -34,11 +37,16 @@ class _ApplicationState extends State<Application> {
             label: 'کار های روزانه',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.chat_rounded),
+            label: 'چت بات',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'تنظیمات',
           ),
         ],
         currentIndex: currentIndex,
+
         onTap: (index) => setState(() => currentIndex = index),
       ),
     );

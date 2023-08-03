@@ -4,7 +4,7 @@ description: Personal assistant
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 0.0.14+16
+version: 0.0.18+20
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
@@ -27,6 +27,11 @@ dependencies:
   googleapis: ^11.3.0
   firebase_core: ^2.15.0
   flutter_secure_storage: ^8.0.0
+  modal_bottom_sheet: 3.0.0-pre
+  oauth2: ^2.0.2
+  window_to_front: ^0.0.3
+  url_launcher: ^6.1.12
+  persian_datetime_picker: ^2.6.0
 
 dev_dependencies:
   flutter_test:

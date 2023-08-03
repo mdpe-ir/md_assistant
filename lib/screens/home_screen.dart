@@ -1,70 +1,84 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:google_sign_in/google_sign_in.dart' as signIn;
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:md_assistant/components/add_daily_task_component.dart';
 import 'package:md_assistant/components/sync_button_components.dart';
 import 'package:md_assistant/models/task.dart';
-import 'package:md_assistant/providers/secure_storage_provider.dart';
-import 'package:md_assistant/service/app_sync.dart';
 import 'package:md_assistant/utils/constant.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
+import '../components/single_task_component.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('کار های امروز'),
-        actions: [
-          SyncButtonComponents(isSendData: false),
-          SyncButtonComponents(isSendData: true),
-          IconButton(
-            tooltip: "",
-            icon: const Icon(Icons.unpublished_outlined),
-            onPressed: () async {
-              final currentDay = DateTime.now().weekday;
-              final tasksBox = await Hive.openBox<Task>('tasks');
-              final dayTasks = tasksBox.values.where((task) => task.day == _getDayOfWeek(currentDay)).toList();
-              for (final task in dayTasks) {
-                task.isCompleted = false;
-                tasksBox.put(task.key, task);
-              }
-            },
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          bottom: const TabBar(
+            tabs: [
+              Tab(
+                icon: Icon(Icons.task_alt),
+                text: "کار های امروز",
+              ),
+              Tab(
+                icon: Icon(Icons.list),
+                text: "لیست انجام کار",
+              ),
+            ],
           ),
-        ],
-      ),
-      body: WatchBoxBuilder(
-        box: Hive.box<Task>('tasks'),
-        builder: (context, box) {
-          final tasks = box.values.toList().cast<Task>();
-          final currentDay = DateTime.now().weekday;
-          final todayTasks = tasks.where((task) => task.day == _getDayOfWeek(currentDay)).toList();
+          title: const Text('خانه'),
+          actions: [
+            SyncButtonComponents(isSendData: false),
+            SyncButtonComponents(isSendData: true),
+          ],
+        ),
+        body: TabBarView(
+          children: [
+            WatchBoxBuilder(
+              box: Hive.box<Task>('tasks'),
+              builder: (context, box) {
+                final tasks = box.values.toList().cast<Task>();
+                final currentDay = DateTime.now().weekday;
+                final todayTasks = tasks.where((task) => task.day == _getDayOfWeek(currentDay)).toList();
 
-          return ListView.builder(
-            itemCount: todayTasks.length,
-            itemBuilder: (context, index) {
-              final task = todayTasks[index];
-              return ListTile(
-                title: Text(
-                  task.name,
-                  style: TextStyle(
-                    decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-                  ),
-                ),
-                subtitle: task.notes.isEmpty ? null : Text(task.notes),
-                leading: Checkbox(
-                  value: task.isCompleted,
-                  onChanged: (value) {
-                    task.isCompleted = value!;
-                    task.save();
+                return ListView.builder(
+                  itemCount: todayTasks.length,
+                  itemBuilder: (context, index) {
+                    final task = todayTasks[index];
+                    return SingleTaskComponent(task: task , isDailyTask: false);
                   },
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            ),
+            Scaffold(
+              body: WatchBoxBuilder(
+                box: Hive.box<Task>('tasks'),
+                builder: (context, box) {
+                  final tasks = box.values.toList().cast<Task>();
+                  const currentDay = Constant.daily;
+                  final todayTasks = tasks.where((task) => task.day == currentDay).toList().reversed.toList();
+                  return ListView.builder(
+                    itemCount: todayTasks.length,
+                    itemBuilder: (context, index) {
+                      final task = todayTasks[index];
+                      return SingleTaskComponent(task: task , isDailyTask: true);
+                    },
+                  );
+                },
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {
+                  showCupertinoModalBottomSheet(
+                    context: context,
+                    builder: (context) => AddDailyTaskComponent(key: UniqueKey()),
+                  );
+                },
+                child: Icon(Icons.add),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
