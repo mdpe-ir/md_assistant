@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -115,6 +117,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       await client?.closeConversation();
       setState(() => isLoading = false);
     } catch (e) {
+      print(e);
       setState(() => isLoading = false);
     }
   }
