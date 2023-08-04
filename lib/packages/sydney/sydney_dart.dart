@@ -13,15 +13,17 @@ import 'utils.dart';
 class SydneyClient {
   String? bingUCookie;
   bool useProxy = false;
-  ConversationStyle conversationStyle;
   String? conversationSignature;
   String? conversationId;
   String? clientId;
   int? invocationId;
   WebSocketChannel? wssClient;
 
+  final _responseStreamController = StreamController<dynamic>();
+
+  Stream<dynamic> get responseStream => _responseStreamController.stream;
+
   SydneyClient({
-    this.conversationStyle = ConversationStyle.balanced,
     this.bingUCookie,
     this.useProxy = false,
   });
@@ -35,7 +37,7 @@ class SydneyClient {
     await closeConversation();
   }
 
-  Map<String, dynamic> buildAskArguments(String prompt) {
+  Map<String, dynamic> buildAskArguments(String prompt, ConversationStyle conversationStyle) {
     final styleOptions = conversationStyle.value.split(',');
     final optionsSets = [
       'nlu_direct_response_filter',
@@ -116,16 +118,21 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
   }
 
   Future<dynamic> ask(
-    String prompt, {
+    String prompt,
+    ConversationStyle conversationStyle, {
     bool citations = false,
     bool suggestions = false,
     bool raw = false,
   }) async {
     if (conversationId == null || clientId == null || invocationId == null) {
+      _responseStreamController.add("مشکلی رخ داده است. لطفا از اتصال خود به اینترنت اطمینان حاصل کنید و مجدد امتحان کنید...");
       throw NoConnectionException('No connection to Bing Chat found');
     }
 
     // Connect to websocket
+
+    _responseStreamController.add("درحال پردازش درخواست شما :)");
+
 
     wssClient = IOWebSocketChannel.connect(Uri.parse(Constants.bingChatHubUrl),
         protocols: ['v1.json'], headers: Map.from(Constants.headers)..addAll({'Cookie': '_U=$bingUCookie'}));
@@ -137,31 +144,32 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
     await wsStream.first; // connect
 
     // Send prompt
-    final request = buildAskArguments(prompt);
+    final request = buildAskArguments(prompt , conversationStyle);
     invocationId = (invocationId ?? 0) + 1;
     wssClient!.sink.add(asJson(request));
 
     while (true) {
       var responseWs = (await wsStream.first).toString().split(Constants.delimiter);
       for (var obj in responseWs) {
-        print(obj.runtimeType);
-
         if (obj.isEmpty) {
           continue;
         }
 
         final response = jsonDecode(obj);
-        print(response);
 
         // Handle type 1 message
         if (response['type'] == 1) {
           final messages = response['arguments'][0]['messages'];
           if (messages == null || messages[0]['text'].toString().isEmpty) continue;
 
-          if (raw) return response;
-          if (citations) return messages[0]['adaptiveCards'][0]['body'][0]['text'];
+          if (raw) {
+            _responseStreamController.add(response);
+          }
+          if (citations) {
+            _responseStreamController.add(messages[0]['adaptiveCards'][0]['body'][0]['text']);
+          }
 
-          // return messages[0]['text'];
+          _responseStreamController.add(messages[0]['text']);
         }
 
         // Handle type 2 message
@@ -177,81 +185,25 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
             return; // Empty response
           }
 
-          if (raw) return response;
+          if (raw) {
+            _responseStreamController.add(response);
+          }
+          ;
 
           final suggestedResponses = suggestions ? messages[1]['suggestedResponses'].map((r) => r['text']).toList() : null;
 
           if (citations) {
-            return (messages[1]['adaptiveCards'][0]['body'][0]['text'], suggestedResponses);
+            _responseStreamController.add((messages[1]['adaptiveCards'][0]['body'][0]['text'], suggestedResponses));
+            return;
           } else {
-            return (messages[1]['text'], suggestedResponses);
+            _responseStreamController.add((messages[1]['text'], suggestedResponses));
+            return;
           }
         }
       }
     }
   }
 
-  // Future<Stream> askStream(
-  //   String prompt, {
-  //   bool citations = false,
-  //   bool suggestions = false,
-  //   bool raw = false,
-  // }) async {
-  //
-  //   wssClient = IOWebSocketChannel.connect(Uri.parse(Constants.bingChatHubUrl),
-  //       protocols: ['v1.json'], headers: Map.from(Constants.headers)..addAll({'Cookie': '_U=$bingUCookie'}));
-  //
-  //   wssClient!.sink.add(asJson({'protocol': 'json', 'version': 1}));
-  //
-  //   var wsStream = wssClient!.stream.asBroadcastStream();
-  //
-  //   await wsStream.first; // connect
-  //
-  //   // Send prompt
-  //   final request = buildAskArguments(prompt);
-  //   invocationId = (invocationId ?? 0) + 1;
-  //   wssClient!.sink.add(asJson(request));
-  //
-  //   String? previousResponse;
-  //
-  //   // await for (var response in wsStream) {
-  //   //
-  //   //   var responseWs = response.split(Constants.delimiter);
-  //   //   final json = jsonDecode(responseWs[0]);
-  //   //
-  //   //   print(json);
-  //   //
-  //   //   // Handle type 1
-  //   //   if (json['type'] == 1) {
-  //   //     final messages = json['arguments'][0]['messages'];
-  //   //     final responseText = messages[0]['text'];
-  //   //
-  //   //     if (raw) {
-  //   //       yield json;
-  //   //     } else {
-  //   //       yield newTokensOnly(previousResponse, responseText);
-  //   //       previousResponse = responseText;
-  //   //     }
-  //   //   }
-  //   //
-  //   //   // Handle type 2
-  //   //   else if (json['type'] == 2) {
-  //   //     final messages = json['item']['messages'];
-  //   //     final responseText = messages[1]['text'];
-  //   //
-  //   //     if (raw) {
-  //   //       yield json;
-  //   //     } else {
-  //   //       yield newTokensOnly(previousResponse, responseText);
-  //   //       previousResponse = responseText;
-  //   //     }
-  //   //
-  //   //     break; // Exit on type 2
-  //   //   }
-  //   // }
-  // }
-
-  // Utility method
   String newTokensOnly(String? previous, String current) {
     if (previous == null) return current;
     return current.substring(previous.length);
@@ -260,10 +212,12 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
   Future<void> startConversation() async {
     // Make HTTP request to start conversation
 
-    final response = await http.get(
-      Uri.parse(Constants.bingCreateConversationUrl),
-      headers: Map.from(Constants.headers)..addAll({'Cookie': '_U=$bingUCookie'}),
-    );
+    final response = await http
+        .get(
+          Uri.parse(Constants.bingCreateConversationUrl),
+          headers: Map.from(Constants.headers)..addAll({'Cookie': '_U=$bingUCookie'}),
+        )
+        .timeout(const Duration(seconds: 30));
 
     if (response.statusCode != 200) {
       throw Exception('Failed to create conversation');

@@ -4,7 +4,7 @@ description: Personal assistant
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-version: 0.0.18+20
+version: 0.0.20+22
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
@@ -32,6 +32,11 @@ dependencies:
   window_to_front: ^0.0.3
   url_launcher: ^6.1.12
   persian_datetime_picker: ^2.6.0
+  tuple: ^2.0.2
+  flutter_markdown: ^0.6.17
+  markdown_widget: ^2.2.0
+  flutter_awesome_select: ^6.5.0
+  dropdown_search: ^5.0.6
 
 dev_dependencies:
   flutter_test:
@@ -50,4 +55,10 @@ flutter:
       fonts:
         - asset: assets/fonts/Vazirmatn-Regular.ttf
         - asset: assets/fonts/Vazirmatn-Medium.ttf
+          weight: 600
+
+    - family: JetbrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+        - asset: assets/fonts/JetBrainsMono-Medium.ttf
           weight: 600

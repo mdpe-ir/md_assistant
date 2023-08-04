@@ -36,9 +36,9 @@ void main() async {
   await HiveHelper.initHive();
   await Hive.openBox<Task>('tasks');
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
   runApp(MyApp());
 }
