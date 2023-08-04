@@ -1,9 +1,12 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:md_assistant/components/chat_bog_single_message_component.dart';
 import 'package:md_assistant/packages/auto_direction/auto_direction.dart';
+import 'package:md_assistant/utils/constant.dart' as utilConstant;
 import 'package:md_assistant/packages/sydney/enums.dart';
 import 'package:md_assistant/packages/sydney/sydney_dart.dart';
+import 'package:md_assistant/providers/secure_storage_provider.dart';
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
@@ -17,9 +20,22 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   ConversationStyle conversationStyle = ConversationStyle.balanced;
 
-  SydneyClient client = SydneyClient(bingUCookie: "");
+  SydneyClient? client ;
 
   String text = "";
+  TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initClient();
+  }
+
+  Future initClient() async{
+    client = SydneyClient(bingUCookie: await SecureStorageProvider.getString(key: utilConstant.Constant.bingChatSecretKey) ?? "");
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,13 +77,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
       body: Theme(
           data: Theme.of(context).copyWith(
               textTheme: Theme.of(context).textTheme.apply(fontFamily: "JetbrainsMono", fontFamilyFallback: ["Vazirmatn"])),
-          child: ChatBotSingleMessageComponent(stream: client.responseStream)),
+          child: client != null ?  ChatBotSingleMessageComponent(stream: client!.responseStream) : Container())  ,
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: AutoDirection(
           text: text,
           child: TextFormField(
-            // Add PlaceHolder
+            controller: textEditingController,
             maxLength: 4000,
             maxLines: null,
             onChanged: (value) {
@@ -77,14 +93,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
-              floatingLabelBehavior: FloatingLabelBehavior.never,
-              labelText: 'پیامی بنویسید...',
-              suffixIcon: IconButton(
-                onPressed: () {
-                  sendMessage();
-                },
-                icon: const Icon(Icons.send),
-              ),
+              hintText: 'پیامی بنویسید...',
+              prefixIcon: text.length > 3
+                  ? IconButton(onPressed: () => textEditingController.clear(), icon: const Icon(Icons.clear))
+                  : null,
+              suffixIcon: isLoading
+                  ? SizedBox(width: 20, height: 20, child: SpinKitFadingCircle(size: 20, color: Theme.of(context).highlightColor))
+                  : IconButton(onPressed: () => sendMessage(), icon: const Icon(Icons.send)),
             ),
           ),
         ),
@@ -93,8 +108,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 
   Future<void> sendMessage() async {
-    await client.startConversation();
-    await client.ask(text, conversationStyle, suggestions: true);
-    await client.closeConversation();
+    setState(() => isLoading = true);
+    try {
+      await client?.startConversation();
+      await client?.ask("$text\nDo not introduce your self", conversationStyle, suggestions: true);
+      await client?.closeConversation();
+      setState(() => isLoading = false);
+    } catch (e) {
+      setState(() => isLoading = false);
+    }
   }
 }
