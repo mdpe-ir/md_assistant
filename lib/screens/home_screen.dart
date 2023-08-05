@@ -46,7 +46,7 @@ class HomeScreen extends StatelessWidget {
                   itemCount: todayTasks.length,
                   itemBuilder: (context, index) {
                     final task = todayTasks[index];
-                    return SingleTaskComponent(task: task , isDailyTask: false);
+                    return SingleTaskComponent(task: task, isDailyTask: false);
                   },
                 );
               },
@@ -62,16 +62,17 @@ class HomeScreen extends StatelessWidget {
                     itemCount: todayTasks.length,
                     itemBuilder: (context, index) {
                       final task = todayTasks[index];
-                      return SingleTaskComponent(task: task , isDailyTask: true);
+                      return SingleTaskComponent(task: task, isDailyTask: true);
                     },
                   );
                 },
               ),
               floatingActionButton: FloatingActionButton(
                 onPressed: () {
-                  showCupertinoModalBottomSheet(
+                  showMaterialModalBottomSheet(
+                    enableDrag: true,
                     context: context,
-                    builder: (context) => AddDailyTaskComponent(key: UniqueKey()),
+                    builder: (context) => AddDailyTaskComponent(key: key),
                   );
                 },
                 child: Icon(Icons.add),

@@ -80,58 +80,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     String? value = await SecureStorageProvider.getString(key: Constant.bingChatSecretKey);
                     TextEditingController textController = TextEditingController(text: value);
                     if (mounted) {
-                      showCupertinoModalBottomSheet(
+                      showMaterialModalBottomSheet(
                         context: context,
+                        enableDrag: true,
                         builder: (context) {
-                          return Material(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: ListView(
-                                shrinkWrap: true,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: AutoDirection(
-                                      text: textController.text,
-                                      child: TextFormField(
-                                        controller: textController,
-                                        decoration: const InputDecoration(
-                                          labelText: 'کلید شخصی چت بات',
-                                          hintText: "کلید  شخصی فعال ساز چت بات را وارد کنید ",
-                                          border: OutlineInputBorder(),
+                          return Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SingleChildScrollView(
+                              child: Container(
+                                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: AutoDirection(
+                                        text: textController.text,
+                                        child: TextFormField(
+                                          controller: textController,
+                                          decoration: const InputDecoration(
+                                            labelText: 'کلید شخصی چت بات',
+                                            hintText: "کلید  شخصی فعال ساز چت بات را وارد کنید ",
+                                            border: OutlineInputBorder(),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-                                        child: ElevatedButton(
-                                            onPressed: () async {
-                                              await SecureStorageProvider.setString(
-                                                  key: Constant.bingChatSecretKey, value: textController.text);
-                                              if (mounted) Navigator.pop(context);
-                                            },
-                                            child: const Padding(
-                                              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 0),
-                                              child: Text("ثبت"),
-                                            )),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-                                        child: ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Padding(
-                                              padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 0),
-                                              child: Text("لغو"),
-                                            )),
-                                      )
-                                    ],
-                                  )
-                                ],
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+                                          child: TextButton(
+                                              onPressed: () async {
+                                                await SecureStorageProvider.setString(
+                                                    key: Constant.bingChatSecretKey, value: textController.text);
+                                                if (mounted) Navigator.pop(context);
+                                              },
+                                              child: Text("ثبت")),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+                                          child: TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text("لغو")),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -145,14 +143,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _item({required IconData icon, required String title, required Widget actionWidget , Widget? subTitle}) {
+  Widget _item({required IconData icon, required String title, required Widget actionWidget, Widget? subTitle}) {
     return Column(
       children: [
         ListTile(
           leading: Icon(icon),
           title: Text(title),
           subtitle: subTitle,
-          subtitleTextStyle: TextStyle(fontSize: 13 , fontFamily: "Vazirmatn"),
+          subtitleTextStyle: TextStyle(fontSize: 13, fontFamily: "Vazirmatn"),
           trailing: actionWidget,
         ),
         const Divider(),

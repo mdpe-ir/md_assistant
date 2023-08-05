@@ -111,6 +111,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   Future<void> sendMessage() async {
     setState(() => isLoading = true);
+    FocusManager.instance.primaryFocus?.unfocus();
     try {
       await client?.startConversation();
       await client?.ask("$text\nDo not introduce your self", conversationStyle, suggestions: true);

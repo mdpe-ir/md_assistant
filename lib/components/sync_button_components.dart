@@ -69,59 +69,52 @@ class _SyncButtonComponentsState extends State<SyncButtonComponents> {
               await launchUrl(authUri);
               ScaffoldMessenger.of(context).clearSnackBars();
               if (mounted) {
-                await showCupertinoModalBottomSheet(
+                await showMaterialModalBottomSheet(
                   context: context,
+                  // isScrollControlled: true,
                   builder: (context) {
-                    return Material(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                  "بعد از ورود به حساب کاربری گوگل خود و تکمیل عملیات، لینک مرورگر خود را کپی کنید و در فیلد زیر را وارد کنید"),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TextFormField(
-                                controller: textEditingController,
-                                decoration: const InputDecoration(
-                                  labelText: 'آدرس مرورگر',
-                                  hintText: "آدرس مرورگر را وارد کنید",
-                                  border: OutlineInputBorder(),
-                                ),
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                                "بعد از ورود به حساب کاربری گوگل خود و تکمیل عملیات، لینک مرورگر خود را کپی کنید و در فیلد زیر را وارد کنید"),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: textEditingController,
+                              decoration: const InputDecoration(
+                                labelText: 'آدرس مرورگر',
+                                hintText: "آدرس مرورگر را وارد کنید",
+                                border: OutlineInputBorder(),
                               ),
                             ),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-                                  child: ElevatedButton(
-                                      onPressed: () async {
-                                        if (mounted) Navigator.pop(context);
-                                      },
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 0),
-                                        child: Text("ثبت"),
-                                      )),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
-                                  child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 0),
-                                        child: Text("لغو"),
-                                      )),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
+                          ),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+                                child: TextButton(
+                                    onPressed: () async {
+                                      if (mounted) Navigator.pop(context);
+                                    },
+                                    child: Text("ثبت")),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+                                child: TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("لغو")),
+                              )
+                            ],
+                          )
+                        ],
                       ),
                     );
                   },
