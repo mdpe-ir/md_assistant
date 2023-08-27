@@ -20,11 +20,9 @@ class DailyTasksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("تنظیم کار های روزانه"),
-      ),
-      body: ListView.builder(
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: ListView.builder(
         itemCount: daysOfWeek.length,
         itemBuilder: (context, index) {
           final day = daysOfWeek[index];

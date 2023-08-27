@@ -47,7 +47,7 @@ class _AddDailyTaskComponentState extends State<AddDailyTaskComponent> {
                   onChanged: (value) {
                     setState(() => task.notes = value);
                   },
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     suffix: IconButton(
                         onPressed: () async {
                           var picked = await showTimePicker(
@@ -56,13 +56,13 @@ class _AddDailyTaskComponentState extends State<AddDailyTaskComponent> {
                           );
                           if (mounted) {
                             String? label = picked?.persianFormat(context);
-                            setState(() => task.notes = label ?? "");
+                            setState(() => task.notes = "${task.notes} ${label ?? ""}");
                             noteController.text = task.notes;
                           }
                         },
-                        icon: Icon(Icons.calendar_month)),
+                        icon: const Icon(Icons.calendar_month)),
                     labelText: 'یادداشت / ساعت انجام کار',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ),
@@ -72,9 +72,9 @@ class _AddDailyTaskComponentState extends State<AddDailyTaskComponent> {
               child: Row(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 16.0,right: 16.0, bottom: 8),
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8),
                     child: TextButton(
-                      child: Text("افزودن"),
+                      child: const Text("افزودن"),
                       onPressed: () async {
                         final tasksBox = await Hive.openBox<Task>('tasks');
                         await tasksBox.add(task);
