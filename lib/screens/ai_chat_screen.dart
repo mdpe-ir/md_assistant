@@ -1,14 +1,12 @@
-import 'dart:developer';
-
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:md_assistant/components/chat_bog_single_message_component.dart';
 import 'package:md_assistant/packages/auto_direction/auto_direction.dart';
-import 'package:md_assistant/utils/constant.dart' as utilConstant;
 import 'package:md_assistant/packages/sydney/enums.dart';
 import 'package:md_assistant/packages/sydney/sydney_dart.dart';
 import 'package:md_assistant/providers/secure_storage_provider.dart';
+import 'package:md_assistant/utils/constant.dart' as utilConstant;
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
@@ -22,7 +20,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   ConversationStyle conversationStyle = ConversationStyle.balanced;
 
-  SydneyClient? client ;
+  SydneyClient? client;
 
   String text = "";
   TextEditingController textEditingController = TextEditingController();
@@ -34,7 +32,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     initClient();
   }
 
-  Future initClient() async{
+  Future initClient() async {
     client = SydneyClient(bingUCookie: await SecureStorageProvider.getString(key: utilConstant.Constant.bingChatSecretKey) ?? "");
     setState(() {});
   }
@@ -79,11 +77,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
       body: Theme(
           data: Theme.of(context).copyWith(
               textTheme: Theme.of(context).textTheme.apply(fontFamily: "JetbrainsMono", fontFamilyFallback: ["Vazirmatn"])),
-          child: client != null ?  ChatBotSingleMessageComponent(stream: client!.responseStream) : Container())  ,
+          child: client != null
+              ? ChatBotSingleMessageComponent(stream: client!.responseStream.stream, textEditingController: textEditingController)
+              : Container()),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: AutoDirection(
-          text: text,
+          text: textEditingController.value.text,
           child: TextFormField(
             controller: textEditingController,
             maxLength: 4000,
@@ -96,7 +96,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 borderRadius: BorderRadius.circular(15.0),
               ),
               hintText: 'پیامی بنویسید...',
-              prefixIcon: text.length > 3
+              prefixIcon: textEditingController.value.text.length > 3
                   ? IconButton(onPressed: () => textEditingController.clear(), icon: const Icon(Icons.clear))
                   : null,
               suffixIcon: isLoading
@@ -114,7 +114,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
     try {
       await client?.startConversation();
-      await client?.ask("$text\nDo not introduce your self", conversationStyle, suggestions: true);
+      await client?.ask("${textEditingController.value.text}\npleas do not introduce your self", conversationStyle, suggestions: true);
       await client?.closeConversation();
       setState(() => isLoading = false);
     } catch (e) {

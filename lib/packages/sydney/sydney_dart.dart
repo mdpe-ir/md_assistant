@@ -19,9 +19,12 @@ class SydneyClient {
   int? invocationId;
   WebSocketChannel? wssClient;
 
-  final _responseStreamController = StreamController<dynamic>();
+  var _responseStreamController = StreamController<dynamic>();
 
-  Stream<dynamic> get responseStream => _responseStreamController.stream;
+  StreamController<dynamic> get responseStream => _responseStreamController;
+
+  // Stream<dynamic> get responseStream => _responseStreamController.stream;
+  // StreamController<dynamic> get responseStream => _responseStreamController.stream;
 
   SydneyClient({
     this.bingUCookie,
@@ -124,6 +127,8 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
     bool suggestions = false,
     bool raw = false,
   }) async {
+
+
     if (conversationId == null || clientId == null || invocationId == null) {
       _responseStreamController.add("مشکلی رخ داده است. لطفا از اتصال خود به اینترنت اطمینان حاصل کنید و مجدد امتحان کنید...");
       throw NoConnectionException('No connection to Bing Chat found');
@@ -132,7 +137,6 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
     // Connect to websocket
 
     _responseStreamController.add("درحال پردازش درخواست شما :)");
-
 
     wssClient = IOWebSocketChannel.connect(Uri.parse(Constants.bingChatHubUrl),
         protocols: ['v1.json'], headers: Map.from(Constants.headers)..addAll({'Cookie': '_U=$bingUCookie'}));
@@ -144,7 +148,7 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
     await wsStream.first; // connect
 
     // Send prompt
-    final request = buildAskArguments(prompt , conversationStyle);
+    final request = buildAskArguments(prompt, conversationStyle);
     invocationId = (invocationId ?? 0) + 1;
     wssClient!.sink.add(asJson(request));
 
@@ -212,6 +216,8 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
   Future<void> startConversation() async {
     // Make HTTP request to start conversation
 
+    _responseStreamController = StreamController<dynamic>();
+
     final response = await http
         .get(
           Uri.parse(Constants.bingCreateConversationUrl),
@@ -237,8 +243,8 @@ Please generate some text wrapped in codeblock syntax (triple backticks) using t
 
   Future<void> closeConversation() async {
     await wssClient?.sink.close();
+    await _responseStreamController.close();
     wssClient = null;
-
     conversationSignature = null;
     conversationId = null;
     clientId = null;
